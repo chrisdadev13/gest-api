@@ -3,17 +3,12 @@ import { UserModule } from './user/user.module';
 import { AuthModule } from './auth/auth.module';
 import { ConfigModule } from './config/config.module';
 import { ContactsModule } from './contacts/contacts.module';
-import { DevtoolsModule } from '@nestjs/devtools-integration';
+import { AppController } from './app.controller';
+import { AppService } from './app.service';
 
 @Module({
-  imports: [
-    DevtoolsModule.register({
-      http: process.env.NODE_ENV !== 'production',
-    }),
-    UserModule,
-    AuthModule,
-    ConfigModule,
-    ContactsModule,
-  ],
+  imports: [UserModule, AuthModule, ConfigModule, ContactsModule],
+  controllers: [AppController],
+  providers: [AppService],
 })
 export class AppModule {}
