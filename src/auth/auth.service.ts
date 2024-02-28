@@ -8,13 +8,14 @@ import {
 import { UserService } from '../user/user.service';
 import { LoginDTO, RegisterDTO } from './dto/auth.dto';
 
-import bcrypt from 'bcrypt';
 import { ErrorMessage } from 'src/utils/error';
 import { Payload } from './utils/payload';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 import { Config } from 'src/config/schema';
 import { randomBytes } from 'crypto';
+
+import * as bcrypt from 'bcryptjs';
 
 @Injectable()
 export class AuthService {
@@ -26,6 +27,10 @@ export class AuthService {
 
   private hash(password: string): Promise<string> {
     return bcrypt.hash(password, 10);
+  }
+
+  private compare(password: string, hashedPassword: string): Promise<boolean> {
+    return bcrypt.compare(password, hashedPassword);
   }
 
   generateToken(
@@ -77,31 +82,44 @@ export class AuthService {
     const user = await this.userService.userById(payload.id);
     const storedRefreshToken = user.secrets?.refreshToken;
 
-    if (!storedRefreshToken || storedRefreshToken !== token)
+    if (!storedRefreshToken || storedRefreshToken !== token) {
       throw new ForbiddenException();
+    }
   }
 
   async register({ email, name, password }: RegisterDTO) {
-    const userExists = await this.userService.user({ email });
-    if (userExists) {
-      throw new BadRequestException(ErrorMessage.UserAlreadyExists);
+    try {
+      const userExists = await this.userService.user({ email });
+      if (userExists) {
+        throw new BadRequestException(ErrorMessage.UserAlreadyExists);
+      }
+
+      const hashedPassword = await this.hash(password);
+
+      const user = await this.userService.createUser({
+        email,
+        name,
+        password: hashedPassword,
+        secrets: {
+          create: {
+            password: hashedPassword,
+          },
+        },
+      });
+
+      return user;
+    } catch (error) {
+      throw new InternalServerErrorException(
+        error,
+        ErrorMessage.SomethingWentWrong,
+      );
     }
-
-    const hashedPassword = await this.hash(password);
-
-    const user = await this.userService.createUser({
-      email,
-      name,
-      password: hashedPassword,
-    });
-
-    return user;
   }
 
   async login({ email, password }: LoginDTO) {
     const user = await this.userService.user({ email });
 
-    const isPasswordValid = await bcrypt.compare(password, user.password);
+    const isPasswordValid = await this.compare(password, user.password);
 
     if (!isPasswordValid) {
       throw new UnauthorizedException(ErrorMessage.InvalidCredentials);

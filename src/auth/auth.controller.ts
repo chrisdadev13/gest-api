@@ -46,6 +46,13 @@ export class AuthController {
 
     response.cookie('Authentication', accessToken, getCookieOptions('access'));
     response.cookie('Refresh', refreshToken, getCookieOptions('refresh'));
+
+    response.status(200).send({
+      accessToken,
+      refreshToken,
+      id: user.id,
+      email: user.email,
+    });
   }
 
   @Post('register')
