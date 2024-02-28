@@ -5,10 +5,6 @@ export enum ErrorMessage {
   InvalidResetToken = 'InvalidResetToken',
   InvalidVerificationToken = 'InvalidVerificationToken',
   EmailAlreadyVerified = 'EmailAlreadyVerified',
-  TwoFactorNotEnabled = 'TwoFactorNotEnabled',
-  TwoFactorAlreadyEnabled = 'TwoFactorAlreadyEnabled',
-  InvalidTwoFactorCode = 'InvalidTwoFactorCode',
-  InvalidTwoFactorBackupCode = 'InvalidTwoFactorBackupCode',
   InvalidBrowserConnection = 'InvalidBrowserConnection',
   SomethingWentWrong = 'SomethingWentWrong',
 }

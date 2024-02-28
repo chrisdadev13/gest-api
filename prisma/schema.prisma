@@ -17,24 +17,21 @@ model User {
 }
 
 model Secrets {
-  id                   String    @id @default(cuid())
-  password             String?
-  lastSignedIn         DateTime?
-  verificationToken    String?
-  twoFactorSecret      String?
-  twoFactorBackupCodes String[]  @default([])
-  refreshToken         String?
-  resetToken           String?   @unique
-  user                 User      @relation(fields: [userId], references: [id], onDelete: Cascade)
-  userId               Int       @unique
+  id           String    @id @default(cuid())
+  password     String?
+  lastSignedIn DateTime?
+  refreshToken String?
+  resetToken   String?   @unique
+  user         User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId       Int       @unique
 }
 
 model Contact {
   id          Int       @id @default(autoincrement())
   name        String
   description String?
-  phone       String
-  email       String
+  phone       String?
+  email       String?
   birthday    DateTime?
   address     String?
   favorite    Boolean   @default(false)
