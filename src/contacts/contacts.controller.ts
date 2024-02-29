@@ -24,10 +24,10 @@ import { JwtGuard } from 'src/auth/guards/jwt.guard';
 export class ContactsController {
   constructor(private readonly contactService: ContactsService) {}
 
-  @Get('/')
+  @Get()
   async list(
     @User() user: UserEntity,
-    @Query('skip') skip: string,
+    @Query('skip') skip: string = '0',
     @Query('take') take: string = '10',
   ) {
     try {
