@@ -63,6 +63,7 @@ export class ContactsController {
 
       response.status(201).send({ newContact });
     } catch (error) {
+      console.error(error);
       throw new InternalServerErrorException(
         error,
         ErrorMessage.SomethingWentWrong,
@@ -90,6 +91,7 @@ export class ContactsController {
 
       response.status(201).send({ contact });
     } catch (error) {
+      console.error(error);
       throw new InternalServerErrorException(
         error,
         ErrorMessage.SomethingWentWrong,
