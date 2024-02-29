@@ -9,6 +9,7 @@ import {
   Param,
   Get,
   NotFoundException,
+  Query,
 } from '@nestjs/common';
 import { CreateDTO, ParamDTO, UpdateDTO } from './dto/contacts.dto';
 import { User } from 'src/user/decorators/user.decorator';
@@ -22,6 +23,28 @@ import { JwtGuard } from 'src/auth/guards/jwt.guard';
 @Controller('contacts')
 export class ContactsController {
   constructor(private readonly contactService: ContactsService) {}
+
+  @Get('/')
+  async list(
+    @User() user: UserEntity,
+    @Query('skip') skip: string,
+    @Query('take') take: string = '10',
+  ) {
+    try {
+      const contacts = await this.contactService.contacts({
+        skip: parseInt(skip),
+        take: parseInt(take),
+        where: {
+          userId: user.id,
+        },
+      });
+
+      return contacts;
+    } catch (error) {
+      console.log(error);
+      throw new InternalServerErrorException(ErrorMessage.SomethingWentWrong);
+    }
+  }
 
   @Get('/:id')
   async getOneById(

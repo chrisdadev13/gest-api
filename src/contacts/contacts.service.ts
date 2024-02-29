@@ -21,16 +21,14 @@ export class ContactsService {
     take?: number;
     cursor?: Prisma.ContactWhereUniqueInput;
     where?: Prisma.ContactWhereInput;
-    orderBy?: Prisma.ContactOrderByWithRelationInput;
   }): Promise<Contact[]> {
-    const { skip, take, cursor, where, orderBy } = params;
+    const { skip, take, cursor, where } = params;
 
     return this.prisma.contact.findMany({
       skip,
       take,
       cursor,
       where,
-      orderBy,
     });
   }
 
