@@ -52,6 +52,7 @@ export class ContactsController {
     @Res() response: Response,
   ) {
     try {
+      console.log(user);
       const newContact = await this.contactService.createContact(
         user.id,
         createDto,
