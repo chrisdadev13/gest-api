@@ -49,22 +49,24 @@ export class ContactsService {
   ): Promise<Contact | null> {
     const { email, phone } = data;
 
-    const alreadyExists = await this.prisma.contact.findFirst({
-      where: {
-        userId,
-        OR: [
-          {
-            email,
-          },
-          {
-            phone,
-          },
-        ],
-      },
-    });
+    if (email.length || phone.length) {
+      const alreadyExists = await this.prisma.contact.findFirst({
+        where: {
+          userId,
+          OR: [
+            {
+              email,
+            },
+            {
+              phone,
+            },
+          ],
+        },
+      });
 
-    if (alreadyExists) {
-      throw new ConflictException('Contact already exists');
+      if (alreadyExists) {
+        throw new ConflictException('Contact already exists');
+      }
     }
 
     const contactData = {
