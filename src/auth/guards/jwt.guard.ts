@@ -4,7 +4,6 @@ import {
   ExecutionContext,
   UnauthorizedException,
 } from '@nestjs/common';
-import { Observable } from 'rxjs';
 import * as cookie from 'cookie';
 import { UserService } from 'src/user/user.service';
 import { JwtService } from '@nestjs/jwt';
@@ -19,6 +18,8 @@ export class JwtGuard implements CanActivate {
     const request = context.switchToHttp().getRequest();
     const authHeader = request.headers.cookie;
     const cookies = cookie.parse(authHeader);
+
+    console.log(cookies);
 
     if (!authHeader)
       throw new UnauthorizedException('Authorization header not found.');
