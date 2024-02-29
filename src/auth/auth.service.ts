@@ -3,6 +3,7 @@ import {
   ForbiddenException,
   Injectable,
   InternalServerErrorException,
+  NotFoundException,
   UnauthorizedException,
 } from '@nestjs/common';
 import { UserService } from '../user/user.service';
@@ -16,6 +17,7 @@ import { Config } from 'src/config/schema';
 import { randomBytes } from 'crypto';
 
 import * as bcrypt from 'bcryptjs';
+import { NotFoundError } from 'rxjs';
 
 @Injectable()
 export class AuthService {
@@ -118,6 +120,10 @@ export class AuthService {
 
   async login({ email, password }: LoginDTO) {
     const user = await this.userService.user({ email });
+
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
 
     const isPasswordValid = await this.compare(password, user.password);
 
