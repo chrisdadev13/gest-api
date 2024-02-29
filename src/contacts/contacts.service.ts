@@ -1,4 +1,4 @@
-import { ConflictException, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 
 import type { Prisma, Contact } from '@prisma/client';
@@ -58,36 +58,10 @@ export class ContactsService {
   }
 
   async updateContact(params: {
-    userId: number;
     contactId: number; // Contact Id
     data: UpdateDTO;
   }): Promise<Contact> {
-    const { userId, contactId, data } = params;
-
-    if (data.email || data.phone) {
-      const alreadyExists = await this.prisma.contact.findFirst({
-        where: {
-          userId,
-          id: { not: contactId },
-          OR: [
-            {
-              email: data.email,
-            },
-            {
-              phone: data.phone,
-            },
-          ],
-        },
-      });
-
-      if (alreadyExists) {
-        const conflictField =
-          alreadyExists.email === data.email ? 'email' : 'phone';
-        throw new ConflictException(
-          `Contact with this ${conflictField} already exists`,
-        );
-      }
-    }
+    const { contactId, data } = params;
 
     return this.prisma.contact.update({
       data,

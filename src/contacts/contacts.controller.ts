@@ -94,14 +94,12 @@ export class ContactsController {
 
   @Put('/:id')
   async update(
-    @User() user: UserEntity,
     @Param() updateParam: ParamDTO,
     @Body() updateDto: UpdateDTO,
     @Res() response: Response,
   ) {
     try {
       const contact = await this.contactService.updateContact({
-        userId: user.id,
         contactId: parseInt(updateParam.id),
         data: updateDto,
       });
