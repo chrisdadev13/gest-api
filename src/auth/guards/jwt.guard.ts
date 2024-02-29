@@ -16,21 +16,17 @@ export class JwtGuard implements CanActivate {
   ) {}
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const request = context.switchToHttp().getRequest();
-    const authHeader = request.headers.Refresh;
-    console.log(authHeader);
+    const authHeader = request.headers['refresh'];
     const cookies = cookie.parse(authHeader);
-
-    console.log(cookies);
 
     if (!authHeader)
       throw new UnauthorizedException('Authorization header not found.');
 
-    const { Authentication, Refresh } = cookies;
-    if (!Authentication || !Refresh) {
+    if (!cookies) {
       throw new UnauthorizedException('Invalid token format.');
     }
 
-    const payload = this.jwtServices.decode(Refresh);
+    const payload = this.jwtServices.decode(cookies.Refresh);
 
     const user = await this.userServices.userById(payload.id);
 
