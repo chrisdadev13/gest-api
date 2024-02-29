@@ -10,6 +10,7 @@ import {
   Get,
   NotFoundException,
   Query,
+  Delete,
 } from '@nestjs/common';
 import { CreateDTO, ParamDTO, UpdateDTO } from './dto/contacts.dto';
 import { User } from 'src/user/decorators/user.decorator';
@@ -52,20 +53,16 @@ export class ContactsController {
     @Param() contactParam: ParamDTO,
     @Res() response: Response,
   ) {
-    try {
-      const contact = await this.contactService.contact({
-        id: parseInt(contactParam.id),
-        userId: user.id,
-      });
+    const contact = await this.contactService.contact({
+      id: parseInt(contactParam.id),
+      userId: user.id,
+    });
 
-      if (!contact) {
-        throw new NotFoundException('Contact not found');
-      }
-
-      response.status(200).send({ contact });
-    } catch (error) {
-      throw new InternalServerErrorException(ErrorMessage.SomethingWentWrong);
+    if (contact === null) {
+      throw new NotFoundException('Contact not found');
     }
+
+    response.status(200).send({ contact });
   }
 
   @Post()
@@ -107,6 +104,27 @@ export class ContactsController {
         userId: user.id,
         contactId: parseInt(updateParam.id),
         data: updateDto,
+      });
+
+      if (!contact) {
+        throw new InternalServerErrorException('Something bad happened');
+      }
+
+      response.status(201).send({ contact });
+    } catch (error) {
+      console.error(error);
+      throw new InternalServerErrorException(
+        error,
+        ErrorMessage.SomethingWentWrong,
+      );
+    }
+  }
+
+  @Delete('/:id')
+  async delete(@Param() updateParam: ParamDTO, @Res() response: Response) {
+    try {
+      const contact = await this.contactService.deleteContact({
+        id: parseInt(updateParam.id),
       });
 
       if (!contact) {
